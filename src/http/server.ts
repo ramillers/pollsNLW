@@ -9,7 +9,7 @@ const app = fastify()
 const prisma = new PrismaClient()
 
 //qnd usuário acessar endereço "polls" vai executar a função
-app.post('/polls', async (request) => {
+app.post('/polls', async (request, reply) => {
     //variavel de validação do request body
     const createPollBody = z.object({
         title: z.string()
@@ -23,7 +23,7 @@ app.post('/polls', async (request) => {
         }
     })
 
-    return { pollId: poll.id }
+    return reply.status(201).send ({ pollId: poll.id })
 })
 
 app.listen({ port: 3333}).then(() => (
