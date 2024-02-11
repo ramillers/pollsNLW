@@ -1,20 +1,29 @@
 import fastify from "fastify"; 
+import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'; 
-import { request } from "http";
+
 
 const app = fastify()
 
+//conexão com a db
+const prisma = new PrismaClient()
+
 //qnd usuário acessar endereço "polls" vai executar a função
-app.post('/polls', (request) => {
+app.post('/polls', async (request) => {
     //variavel de validação do request body
     const createPollBody = z.object({
         title: z.string()
     })
 
     const { title } = createPollBody.parse(request.body) //verifica se o request body tá no formato de objeto
-    //zod retorna as infos tipadas 
+    
+    const poll = await prisma.poll.create({
+        data: {
+            title,
+        }
+    })
 
-    return 'Hello, Ramille!'
+    return { pollId: poll.id }
 })
 
 app.listen({ port: 3333}).then(() => (
